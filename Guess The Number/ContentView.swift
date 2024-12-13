@@ -106,8 +106,8 @@ struct ContentView: View {
     
     func setDifficulty(level: String) {
         if !isGameActive {
-            difficulty = level
-            switch level {
+            difficulty = level // updates difficulty level based on user selection
+            switch level { // switch is similar to an if else chains but is cleaner to use
             case "Easy":
                 randomNumber = Int.random(in: 1...10)
                 timeRemaining = 60
@@ -128,10 +128,10 @@ struct ContentView: View {
     // Return the range based on difficulty
     func difficultyRange() -> Int {
         switch difficulty {
-        case "Easy": return 10
+        case "Easy": return 10 // sets 10, 50, and 100 as the limit for the random number
         case "Medium": return 50
         case "Hard": return 100
-        default: return 10
+        default: return 10 // if difficulty variable conatains a value that isn't present it will return to 10 by default
         }
     }
     
@@ -143,9 +143,9 @@ struct ContentView: View {
     }
     
     func startTimer() {
-        timer?.invalidate()
+        timer?.invalidate() // stops previously running timers
         isGameActive = true
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {_ in
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {_ in // creates timer that goes off in 1 second intervals
             if timeRemaining > 0 {
                 timeRemaining -= 1
             } else {
@@ -230,7 +230,7 @@ class SoundManager { // made class to play sounds
     static let shared = SoundManager()
     var audioPlayer: AVAudioPlayer?
     func playSound(named soundName: String) {
-        guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
+        guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return } // gaurd is a statement that handles situtaions where a condition fails
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.play()
