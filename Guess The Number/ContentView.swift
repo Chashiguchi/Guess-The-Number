@@ -20,8 +20,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.gray.opacity(0.7)
-                    .ignoresSafeArea()
+                Color.gray.opacity(0.7).ignoresSafeArea()
                 VStack(spacing: 30) { // Increased spacing for better layout
                     Text("Guess the Number!")
                         .font(.largeTitle)
@@ -39,19 +38,22 @@ struct ContentView: View {
                         .foregroundColor(timeRemaining <= 10 ? .red : .black)
                     HStack(spacing: 15) {
                         Button("Easy") {
-                            setDifficulty(level: "Easy")
+                                setDifficulty(level: "Easy")
                         }
                         .buttonStyle(DifficultyButtonStyle(color: .green))
+                        .disabled(isGameActive) // Disable if the game is active
                         
                         Button("Medium") {
-                            setDifficulty(level: "Medium")
+                                setDifficulty(level: "Medium")
                         }
                         .buttonStyle(DifficultyButtonStyle(color: .orange))
+                        .disabled(isGameActive) // Disable if the game is active
                         
                         Button("Hard") {
-                            setDifficulty(level: "Hard")
+                                setDifficulty(level: "Hard")
                         }
                         .buttonStyle(DifficultyButtonStyle(color: .red))
+                        .disabled(isGameActive) // Disable if the game is active
                     }
                     Spacer()
                     Text("Enter a number between 1 and \(difficultyRange()):")
@@ -89,7 +91,7 @@ struct ContentView: View {
                     Text(feedback)
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(feedback == "Correct! You guessed it!" ? .green : .red)
+                        .foregroundColor(feedback == "Correct! You guessed it!" ? Color(red: 0.0, green: 0.5, blue: 0.0) : .red)
                     // Navigation link to Instructions view
                     NavigationLink("Game Instructions", destination: InstructionsView())
                         .padding()
@@ -103,21 +105,24 @@ struct ContentView: View {
     }
     
     func setDifficulty(level: String) {
-        difficulty = level
-        switch level {
-        case "Easy":
-            randomNumber = Int.random(in: 1...10)
-            timeRemaining = 60
-        case "Medium":
-            randomNumber = Int.random(in: 1...50)
-            timeRemaining = 45
-        case "Hard":
-            randomNumber = Int.random(in: 1...100)
-            timeRemaining = 30
-        default:
-            break
+        if !isGameActive {
+            difficulty = level
+            switch level {
+            case "Easy":
+                randomNumber = Int.random(in: 1...10)
+                timeRemaining = 60
+            case "Medium":
+                randomNumber = Int.random(in: 1...50)
+                timeRemaining = 45
+            case "Hard":
+                randomNumber = Int.random(in: 1...100)
+                timeRemaining = 30
+            default:
+                break
+                
+            }
+            resetGame() // Reset the game when difficulty changes
         }
-        resetGame() // Reset the game when difficulty changes
     }
     
     // Return the range based on difficulty
@@ -134,7 +139,7 @@ struct ContentView: View {
         userGuess = ""
         feedback = ""
         attempts = 0
-        isGameActive = true
+        isGameActive = false
     }
     
     func startTimer() {
@@ -197,19 +202,26 @@ struct DifficultyButtonStyle: ButtonStyle {
 
 struct InstructionsView: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Game Instructions")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.bottom, 20)
-            
-            Text("1. Guess the correct number within the given time and number of attempts.")
-            Text("2. The difficulty level will change the range of numbers and the time limit.")
-            Text("3. You can press 'Start Game' to reset and begin a new round.")
-            Text("4. The game ends either when the time runs out or the correct number is guessed.")
-            Text("5. Try to guess the number as fast as possible!")
-            Text("6. Before you press start game make sure to press the difficulty you want to play")
-            Spacer()
+        ZStack {
+            Color.gray.opacity(0.7).ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Game Instructions")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding(.bottom, 20)
+                
+                Text("1. Guess the correct number within the given time.")
+                    .font(.title2)
+                Text("2. The difficulty level will change the range of numbers and the time limit.")
+                    .font(.title2)
+                Text("3. You can press 'Start Game' to reset and begin a new round.")
+                    .font(.title2)
+                Text("4. The game ends either when the time runs out or the correct number is guessed.")
+                    .font(.title2)
+                Text("5. Try to guess the number as fast as possible!")
+                    .font(.title2)
+                Spacer()
+            }
         }
     }
 }
