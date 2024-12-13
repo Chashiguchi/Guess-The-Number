@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct ContentView: View {
     @State private var randomNumber = Int.random(in: 1...10) // Default range for Easy
@@ -78,6 +79,7 @@ struct ContentView: View {
                     Button("Start Game") {
                         resetGame()
                         startTimer()
+                        SoundManager.shared.playSound(named: "Correct")
                     }
                     .padding()
                     .background(Color.green)
@@ -99,6 +101,7 @@ struct ContentView: View {
             }
         }
     }
+    
     func setDifficulty(level: String) {
         difficulty = level
         switch level {
@@ -155,11 +158,14 @@ struct ContentView: View {
     
     func checkGuess(_ userGuess: Int) -> String {
         if userGuess < randomNumber {
+            SoundManager.shared.playSound(named: "Incorrect")
             return "Too low!"
         } else if userGuess > randomNumber {
+            SoundManager.shared.playSound(named: "Incorrect")
             return "Too high!"
         } else {
             stopTimer()
+            SoundManager.shared.playSound(named: "Correct")
             return "Correct! You guessed it!"
         }
     }
@@ -204,6 +210,20 @@ struct InstructionsView: View {
             Text("5. Try to guess the number as fast as possible!")
             Text("6. Before you press start game make sure to press the difficulty you want to play")
             Spacer()
+        }
+    }
+}
+
+class SoundManager { // made class to play sounds
+    static let shared = SoundManager()
+    var audioPlayer: AVAudioPlayer?
+    func playSound(named soundName: String) {
+        guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else { return }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+        } catch {
+            print("Error playing sound: \(error.localizedDescription)")
         }
     }
 }
